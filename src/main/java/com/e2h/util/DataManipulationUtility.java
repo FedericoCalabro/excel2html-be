@@ -27,6 +27,7 @@ public class DataManipulationUtility {
     public static boolean matchCriterias(Map<String, Object> row, GenerationRequest request){
         ArrayList<RowCriteria> criterias = request.getConfig().getRowCriteria();
         for (int i = 0; i < criterias.size(); i++) {
+            boolean check = true;
             RowCriteria criteria = criterias.get(i);
             String columnName = criteria.getColumnName() ;
             String type = criteria.getType();
@@ -39,11 +40,11 @@ public class DataManipulationUtility {
                     float vLeft = Float.parseFloat(valueLeft.toString());
                     float vRight = Float.parseFloat(valueRight.toString());
                     switch (op){
-                        case ">": return vLeft > vRight;
-                        case "<": return vLeft < vRight;
-                        case "!=": return vLeft != vRight;
-                        case "==": return vLeft == vRight;
-                        default: return false;
+                        case ">": check = vLeft > vRight; break;
+                        case "<": check = vLeft < vRight; break;
+                        case "!=": check = vLeft != vRight; break;
+                        case "==": check = vLeft == vRight; break;
+                        default: check = false;
                     }
                 } catch (NumberFormatException e){
                     throw new RuntimeException("Unexpected type for column: " + columnName);
@@ -52,13 +53,16 @@ public class DataManipulationUtility {
                 String vLeft = valueLeft.toString();
                 String vRight = valueRight.toString();
                 switch (op){
-                    case ">": return vLeft.compareToIgnoreCase(vRight) < 0;
-                    case "<": return vLeft.compareToIgnoreCase(vRight) > 0;
-                    case "!=": return !vLeft.equalsIgnoreCase(vRight);
-                    case "==": return vLeft.equalsIgnoreCase(vRight);
-                    case "Regex": return vLeft.matches(vRight);
-                    default: return false;
+                    case ">": check = vLeft.compareToIgnoreCase(vRight) < 0; break;
+                    case "<": check = vLeft.compareToIgnoreCase(vRight) > 0; break;
+                    case "!=": check = !vLeft.equalsIgnoreCase(vRight); break;
+                    case "==": check = vLeft.equalsIgnoreCase(vRight); break;
+                    case "Regex": check = vLeft.matches(vRight); break;
+                    default: check = false;
                 }
+            }
+            if(!check) {
+                return false;
             }
         }
         return true;
