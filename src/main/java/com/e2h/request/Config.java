@@ -10,6 +10,7 @@ public class Config {
     private String name = "DATA-VIEW";
     private boolean addRowCounter = false; //se sono in cardvire questo valore DEVE essere false
     private ArrayList<String> columns = new ArrayList<>();
+    private String themeColor = "#32a852";
 
     //TODO: devono avere uguale lunghezza
     //quali tra le colonne di orderColumns sono effettivamente dei link

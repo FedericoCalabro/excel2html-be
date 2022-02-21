@@ -26,7 +26,6 @@ public class DataManipulationUtility {
     
     public static boolean matchCriterias(Map<String, Object> row, GenerationRequest request){
         ArrayList<RowCriteria> criterias = request.getConfig().getRowCriteria();
-        boolean check = true;
         for (int i = 0; i < criterias.size(); i++) {
             RowCriteria criteria = criterias.get(i);
             String columnName = criteria.getColumnName() ;
@@ -44,6 +43,7 @@ public class DataManipulationUtility {
                         case "<": return vLeft < vRight;
                         case "!=": return vLeft != vRight;
                         case "==": return vLeft == vRight;
+                        default: return false;
                     }
                 } catch (NumberFormatException e){
                     throw new RuntimeException("Unexpected type for column: " + columnName);
@@ -57,11 +57,11 @@ public class DataManipulationUtility {
                     case "!=": return !vLeft.equalsIgnoreCase(vRight);
                     case "==": return vLeft.equalsIgnoreCase(vRight);
                     case "Regex": return vLeft.matches(vRight);
+                    default: return false;
                 }
             }
-
         }
-        return check;
+        return true;
     }
 
 }

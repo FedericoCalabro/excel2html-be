@@ -51,7 +51,7 @@ public class TableGenerator implements GeneratorStrategy {
     }
 
     private THead buildTHead(Table table, GenerationRequest request) {
-        THead tHead = new THead(table);
+        THead tHead = new THead(table, new Style("background-color: "+request.getConfig().getThemeColor()+";"));
 
         Tr rowHeader = new Tr(tHead);
         tHead.appendChild(rowHeader);

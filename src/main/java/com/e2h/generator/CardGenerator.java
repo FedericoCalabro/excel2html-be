@@ -66,7 +66,7 @@ public class CardGenerator implements GeneratorStrategy {
         Div cardBody = new Div(parent, new ClassAttribute("card-body"));
 
         ClassAttribute cardHeaderAttributes = new ClassAttribute("card-header", "d-flex", "align-items-center", "justify-content-center");
-        Style cardHeaderStyle = new Style("height: 80px; background-color: #99ffc5;");
+        Style cardHeaderStyle = new Style("height: 80px; background-color: "+request.getConfig().getThemeColor()+";");
         Div cardHeader = new Div(cardBody, cardHeaderAttributes, cardHeaderStyle);
 
         ClassAttribute titleAttributes = new ClassAttribute("card-title", "font-weight-normal", "flex-grow-1", "center");
