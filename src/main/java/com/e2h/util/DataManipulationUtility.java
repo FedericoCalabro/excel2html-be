@@ -1,18 +1,14 @@
 package com.e2h.util;
 
 import com.e2h.request.GenerationRequest;
+import com.e2h.request.MergedColumns;
 import com.e2h.request.RowCriteria;
+import com.webfirmframework.wffweb.tag.html.links.A;
 
 import java.util.ArrayList;
 import java.util.Map;
 
 public class DataManipulationUtility {
-
-    public static String extractValue(GenerationRequest request, int row, String col){
-        ArrayList<Map<String, Object>> data = request.getData();
-        Map<String, Object> rowData = data.get(row);
-        return rowData.get(col).toString();
-    }
 
     public static boolean isLink(GenerationRequest request, String col) {
         ArrayList<String> linkColumns = request.getConfig().getLinkColumns();
@@ -33,7 +29,7 @@ public class DataManipulationUtility {
             String type = criteria.getType();
             String op = criteria.getOp();
             Object valueRight = criteria.getValue();
-            Object valueLeft = row.get(columnName);
+            Object valueLeft = DataManipulationUtility.extractColValue(request, row, columnName);
 
             if(type.equals("Number")) {
                 try {
@@ -66,6 +62,33 @@ public class DataManipulationUtility {
             }
         }
         return true;
+    }
+    
+    public static ArrayList<String> getColComposition(GenerationRequest request, String col){
+        ArrayList<String> composedBy = new ArrayList<>();
+        ArrayList<MergedColumns> mergedColumns = request.getConfig().getMergedColumns();
+        for (int i = 0; i < mergedColumns.size(); i++) {
+            String name = mergedColumns.get(i).getName();
+            if(name.equals(col)){
+                return mergedColumns.get(i).getMergedFrom();
+            }
+        }
+        composedBy.add(col);
+        return composedBy;
+    }
+    
+    public static String extractColValue(GenerationRequest request, Map<String, Object> rowData, String col){
+        ArrayList<String> composedBy = getColComposition(request, col);
+        String finalValue = "";
+        for (int i = 0; i < composedBy.size(); i++) {
+            String composedName = composedBy.get(i);
+            Object colValueObject = rowData.get(composedName);
+            String toAppend = colValueObject != null ? colValueObject.toString() : "#";
+            if(i < composedBy.size() - 1)
+                toAppend += " - ";
+            finalValue += toAppend;
+        }
+        return finalValue;
     }
 
 }

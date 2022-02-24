@@ -90,10 +90,9 @@ public class HtmlGeneratorUtility {
     }
 
     public static AbstractHtml makeDataTag(AbstractHtml parent, GenerationRequest request, int row, String col){
-        Map<String, Object> rowData = request.getData().get(row);
 
-        Object colValueObject = rowData.get(col);
-        String colValueString = colValueObject == null ? "#" : colValueObject.toString();
+
+        String colValueString = DataManipulationUtility.extractColValue(request, request.getData().get(row), col);
 
         AbstractHtml tag = new NoTag(parent);
 

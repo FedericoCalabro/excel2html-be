@@ -11,6 +11,7 @@ public class Config {
     private boolean addRowCounter = false; //se sono in cardvire questo valore DEVE essere false
     private ArrayList<String> columns = new ArrayList<>();
     private String themeColor = "#32a852";
+    private ArrayList<MergedColumns> mergedColumns = new ArrayList<>();
 
     //TODO: devono avere uguale lunghezza
     //quali tra le colonne di orderColumns sono effettivamente dei link
