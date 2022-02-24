@@ -8,6 +8,8 @@ import com.webfirmframework.wffweb.tag.html.Html;
 import com.webfirmframework.wffweb.tag.html.TitleTag;
 import com.webfirmframework.wffweb.tag.html.attribute.*;
 import com.webfirmframework.wffweb.tag.html.attribute.global.ClassAttribute;
+import com.webfirmframework.wffweb.tag.html.attribute.global.Style;
+import com.webfirmframework.wffweb.tag.html.formatting.S;
 import com.webfirmframework.wffweb.tag.html.html5.attribute.Content;
 import com.webfirmframework.wffweb.tag.html.links.A;
 import com.webfirmframework.wffweb.tag.html.links.Link;
@@ -16,6 +18,8 @@ import com.webfirmframework.wffweb.tag.html.metainfo.Meta;
 import com.webfirmframework.wffweb.tag.html.programming.Script;
 import com.webfirmframework.wffweb.tag.htmlwff.NoTag;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 public class HtmlGeneratorUtility {
@@ -107,6 +111,26 @@ public class HtmlGeneratorUtility {
         }
 
         return tag;
+    }
+
+    private static String getBGStyleFromColPos(GenerationRequest request, int pos) {
+        ArrayList<String> themeColor = request.getConfig().getThemeColor();
+        if(themeColor.size() > pos){
+            return "background-color:"+themeColor.get(pos)+";";
+        }else{
+            return "background-color:#ffffff;";
+        }
+    }
+    private static String getTextStyleFromColPos(GenerationRequest request, int pos) {
+        ArrayList<String> textColor = request.getConfig().getTextColor();
+        if(textColor.size() > pos){
+            return "color:"+textColor.get(pos)+";";
+        }else{
+            return "color:#000000;";
+        }
+    }
+    public static Style getTextAndBgStyleForData(GenerationRequest request, int pos){
+        return new Style(getTextStyleFromColPos(request, pos) + getBGStyleFromColPos(request, pos));
     }
 
 }

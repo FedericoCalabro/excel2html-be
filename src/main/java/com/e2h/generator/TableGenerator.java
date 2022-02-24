@@ -51,7 +51,7 @@ public class TableGenerator implements GeneratorStrategy {
     }
 
     private THead buildTHead(Table table, GenerationRequest request) {
-        THead tHead = new THead(table, new Style("background-color: "+request.getConfig().getThemeColor()+";"));
+        THead tHead = new THead(table);
 
         Tr rowHeader = new Tr(tHead);
         tHead.appendChild(rowHeader);
@@ -68,7 +68,7 @@ public class TableGenerator implements GeneratorStrategy {
         ArrayList<AbstractHtml> ths = new ArrayList<>();
         for (int i = 0; i < columns.size(); i++) {
             String colName = columns.get(i);
-            Th th = new Th(rowHeader, new Scope("col"));
+            Th th = new Th(rowHeader, new Scope("col"), HtmlGeneratorUtility.getTextAndBgStyleForData(request, i));
             th.addInnerHtml(new NoTag(null, colName));
             ths.add(th);
         }
@@ -104,7 +104,7 @@ public class TableGenerator implements GeneratorStrategy {
         ArrayList<String> columns = request.getConfig().getColumns();
 
         for (int i = 0; i < columns.size(); i++) {
-            Td td = new Td(tr);
+            Td td = new Td(tr, HtmlGeneratorUtility.getTextAndBgStyleForData(request, i));
             String colName = columns.get(i);
             td.addInnerHtml(HtmlGeneratorUtility.makeDataTag(td, request, row, colName));
             tds.add(td);

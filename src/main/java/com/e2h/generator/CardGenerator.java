@@ -66,8 +66,8 @@ public class CardGenerator implements GeneratorStrategy {
         Div cardBody = new Div(parent, new ClassAttribute("card-body"));
 
         ClassAttribute cardHeaderAttributes = new ClassAttribute("card-header", "d-flex", "align-items-center", "justify-content-center");
-        Style cardHeaderStyle = new Style("height: 80px; background-color: "+request.getConfig().getThemeColor()+";");
-        Div cardHeader = new Div(cardBody, cardHeaderAttributes, cardHeaderStyle);
+        Style cardHeaderStyle = new Style("height: 80px;");
+        Div cardHeader = new Div(cardBody, cardHeaderAttributes, cardHeaderStyle, HtmlGeneratorUtility.getTextAndBgStyleForData(request, 0));
 
         ClassAttribute titleAttributes = new ClassAttribute("card-title", "font-weight-normal", "flex-grow-1", "center");
         H5 title = new H5(cardHeader, titleAttributes);
@@ -85,7 +85,7 @@ public class CardGenerator implements GeneratorStrategy {
         ClassAttribute liAttribute = new ClassAttribute("list-group-item");
         for (int i = 1; i < columns.size(); i++) {
             String colName = columns.get(i);
-            Li li = new Li(orderedList, liAttribute);
+            Li li = new Li(orderedList, liAttribute, HtmlGeneratorUtility.getTextAndBgStyleForData(request, i));
             AbstractHtml insideLi = new NoTag(null, colName+": ");
             AbstractHtml valueLi = HtmlGeneratorUtility.makeDataTag(li, request, row, colName);
             li.addInnerHtmls(insideLi, valueLi);
