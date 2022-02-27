@@ -8,17 +8,17 @@ import java.util.ArrayList;
 public class Config {
     private String view = "TABLE";
     private String name = "DATA-VIEW";
-    private boolean addRowCounter = false; //se sono in cardvire questo valore DEVE essere false
+
+    private boolean addRowCounter = false;
+    private boolean enableSorting = false;
+
     private ArrayList<String> columns = new ArrayList<>();
     private ArrayList<String> themeColor = new ArrayList<>();
     private ArrayList<String> textColor = new ArrayList<>();
+    private ArrayList<SortingColumn> sortByColumns = new ArrayList<>();
     private ArrayList<MergedColumns> mergedColumns = new ArrayList<>();
-
-    //TODO: devono avere uguale lunghezza
-    //quali tra le colonne di orderColumns sono effettivamente dei link
+    private ArrayList<AggregationRow> aggregationRows = new ArrayList<>();
     private ArrayList<String> linkColumns = new ArrayList<>();
-    //che scritta visualizzare per il link i-esimo?
     private ArrayList<String> linkNames = new ArrayList<>();
-
     private ArrayList<RowCriteria> rowCriteria = new ArrayList<>();
 }
