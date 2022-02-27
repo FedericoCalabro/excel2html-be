@@ -110,7 +110,7 @@ public class DataManipulationUtility {
             try {
                 targetValue = Double.parseDouble(targetObj.toString());
             } catch (NumberFormatException e){
-                throw new RuntimeException("Unexpected value: " + targetObj + "for column: " + target);
+                throw new RuntimeException("Unexpected value: " + targetObj + " for column: " + target);
             }
             pivotHelper.putIfAbsent(blockedColValue, new ArrayList<>());
             pivotHelper.get(blockedColValue).add(targetValue);
