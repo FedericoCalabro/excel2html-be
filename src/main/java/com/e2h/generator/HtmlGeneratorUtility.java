@@ -94,18 +94,16 @@ public class HtmlGeneratorUtility {
     }
 
     public static AbstractHtml makeDataTag(AbstractHtml parent, GenerationRequest request, int row, String col){
-
-
         String colValueString = DataManipulationUtility.extractColValue(request, request.getData().get(row), col);
 
         AbstractHtml tag = new NoTag(parent);
 
-        boolean isLink = DataManipulationUtility.isLink(request, col);
+        boolean isLink = colValueString.startsWith("http");
+
         if(isLink){
             tag = new A(parent);
             tag.addAttributes(new Href(colValueString));
-            String linkName = DataManipulationUtility.getLinkName(request, col);
-            tag.addInnerHtml(new NoTag(null, linkName));
+            tag.addInnerHtml(new NoTag(null, col));
         }else{
             tag.addInnerHtml(new NoTag(null, colValueString));
         }

@@ -18,7 +18,5 @@ public class Config {
     private ArrayList<SortingColumn> sortByColumns = new ArrayList<>();
     private ArrayList<MergedColumns> mergedColumns = new ArrayList<>();
     private ArrayList<AggregationRow> aggregationRows = new ArrayList<>();
-    private ArrayList<String> linkColumns = new ArrayList<>();
-    private ArrayList<String> linkNames = new ArrayList<>();
     private ArrayList<RowCriteria> rowCriteria = new ArrayList<>();
 }

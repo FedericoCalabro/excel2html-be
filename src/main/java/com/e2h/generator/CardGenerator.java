@@ -1,6 +1,7 @@
 package com.e2h.generator;
 
 import com.e2h.request.GenerationRequest;
+import com.e2h.util.DataManipulationUtility;
 import com.webfirmframework.wffweb.tag.html.AbstractHtml;
 import com.webfirmframework.wffweb.tag.html.Body;
 import com.webfirmframework.wffweb.tag.html.H5;
@@ -86,9 +87,17 @@ public class CardGenerator implements GeneratorStrategy {
         for (int i = 1; i < columns.size(); i++) {
             String colName = columns.get(i);
             Li li = new Li(orderedList, liAttribute, HtmlGeneratorUtility.getTextAndBgStyleForData(request, i));
-            AbstractHtml insideLi = new NoTag(null, colName+": ");
+            AbstractHtml insideLi = null;
+            if(DataManipulationUtility.getColComposition(request, colName).size() == 1){
+                insideLi = new NoTag(null, colName+": ");
+            }
             AbstractHtml valueLi = HtmlGeneratorUtility.makeDataTag(li, request, row, colName);
-            li.addInnerHtmls(insideLi, valueLi);
+
+            if (insideLi == null) {
+                li.addInnerHtml(valueLi);
+            } else {
+                li.addInnerHtmls(insideLi, valueLi);
+            }
             lis.add(li);
         }
         orderedList.appendChildren(lis);

@@ -6,6 +6,6 @@ import java.util.ArrayList;
 
 @Data
 public class MergedColumns {
-    private String name;
+    private String nameDefinition;
     private ArrayList<String> mergedFrom = new ArrayList<>();
 }
