@@ -77,6 +77,15 @@ public class DataManipulationUtility {
         return true;
     }
 
+    public static String getColNameFromRowValue(GenerationRequest request, int row, String value){
+        Map<String, Object> dataRow = request.getData().get(row);
+        for(Map.Entry<String, Object> entry : dataRow.entrySet()){
+            if(entry.getValue().toString().equals(value))
+                return entry.getKey();
+        }
+        return null;
+    }
+
     public static ArrayList<String> getColComposition(GenerationRequest request, String col) {
         ArrayList<String> composedBy = new ArrayList<>();
         ArrayList<MergedColumns> mergedColumns = request.getConfig().getMergedColumns();
@@ -115,14 +124,18 @@ public class DataManipulationUtility {
             }
             if (nameDefinition == null) throw new RuntimeException("No col named: " + col + " found!");
 
-            String regex = "\\{\\{(\\w+)}}";
+            String regex = "\\{\\{(\\d+?)}}";
             Pattern pattern = Pattern.compile(regex);
             Matcher matcher = pattern.matcher(nameDefinition);
-            int gc = matcher.groupCount() + 1;
-            for (int i = 0; i < gc; i++) {
+
+            int i = 0;
+            while (matcher.find()){
+                String group = matcher.group();
                 Object repl = rowData.get(composedBy.get(i));
                 col = col.replace("{{" + (i + 1) + "}}", repl != null ? repl.toString() : "N/A");
+                i++;
             }
+
             return col;
         }
     }

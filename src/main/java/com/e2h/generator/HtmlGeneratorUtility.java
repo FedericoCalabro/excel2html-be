@@ -9,7 +9,7 @@ import com.webfirmframework.wffweb.tag.html.TitleTag;
 import com.webfirmframework.wffweb.tag.html.attribute.*;
 import com.webfirmframework.wffweb.tag.html.attribute.global.ClassAttribute;
 import com.webfirmframework.wffweb.tag.html.attribute.global.Style;
-import com.webfirmframework.wffweb.tag.html.formatting.S;
+import com.webfirmframework.wffweb.tag.html.attribute.global.Style;
 import com.webfirmframework.wffweb.tag.html.html5.attribute.Content;
 import com.webfirmframework.wffweb.tag.html.links.A;
 import com.webfirmframework.wffweb.tag.html.links.Link;
@@ -19,8 +19,10 @@ import com.webfirmframework.wffweb.tag.html.programming.Script;
 import com.webfirmframework.wffweb.tag.htmlwff.NoTag;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class HtmlGeneratorUtility {
 
@@ -96,19 +98,48 @@ public class HtmlGeneratorUtility {
     public static AbstractHtml makeDataTag(AbstractHtml parent, GenerationRequest request, int row, String col){
         String colValueString = DataManipulationUtility.extractColValue(request, request.getData().get(row), col);
 
-        AbstractHtml tag = new NoTag(parent);
+        AbstractHtml TAG = new NoTag(parent);
+        List<AbstractHtml> insideTag = new ArrayList<>();
 
-        boolean isLink = colValueString.startsWith("http");
+        String regex = "((http|https)://)(www.)?"
+        + "[a-zA-Z0-9@:%._\\+~#?&//=]{2,256}\\.[a-z]"
+        + "{2,6}\\b([-a-zA-Z0-9@:%._\\+~#?&//=]*)";
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(colValueString);
 
-        if(isLink){
-            tag = new A(parent);
-            tag.addAttributes(new Href(colValueString));
-            tag.addInnerHtml(new NoTag(null, col));
-        }else{
+        List<String> splitByRegex = Arrays.stream(colValueString.split(regex)).toList();
+
+        int i = 0;
+        while(matcher.find()){
+            if(splitByRegex.size() > i){
+                AbstractHtml tag = new NoTag(TAG);
+                tag.addInnerHtml(new NoTag(null, splitByRegex.get(i)));
+                insideTag.add(tag);
+            }
+
+            A tag2 = new A(TAG);
+            String href = matcher.group(0);
+            tag2.addAttributes(new Href(href));
+            tag2.addInnerHtml(new NoTag(null, DataManipulationUtility.getColNameFromRowValue(request, row, href)));
+            insideTag.add(tag2);
+
+            i++;
+        }
+        if(i == 0){
+            AbstractHtml tag = new NoTag(TAG);
             tag.addInnerHtml(new NoTag(null, colValueString));
+            insideTag.add(tag);
+        }else if(i < splitByRegex.size()){
+            for (int j = i; j < splitByRegex.size(); j++) {
+                AbstractHtml tag = new NoTag(TAG);
+                tag.addInnerHtml(new NoTag(null, splitByRegex.get(i)));
+                insideTag.add(tag);
+            }
         }
 
-        return tag;
+        TAG.appendChildren(insideTag);
+        return TAG;
+
     }
 
     private static String getBGStyleFromColPos(GenerationRequest request, int pos) {
