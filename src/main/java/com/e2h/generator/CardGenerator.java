@@ -41,7 +41,7 @@ public class CardGenerator implements GeneratorStrategy {
 
     private Div buildCardWrapper(Body body) {
         ClassAttribute cardWrapperAttributes = new ClassAttribute(
-                "h-100", "w-100", "p-4",
+                "!h-100", "!w-100", "p-4",
                 "row","row-cols-1","row-cols-xs-1","row-cols-sm-1",
                 "row-cols-md-2","row-cols-lg-3","row-cols-xl-4");
         Div cardWrapper = new Div(body, new Id("cardWrapper"), cardWrapperAttributes);
@@ -64,11 +64,11 @@ public class CardGenerator implements GeneratorStrategy {
 
         String titleColumn = columns.get(0);
 
-        Div cardBody = new Div(parent, new ClassAttribute("card-body"));
+        Div cardBody = new Div(parent, new ClassAttribute("p-4")); //flexgrow per far crescere la card
 
         ClassAttribute cardHeaderAttributes = new ClassAttribute("card-header", "d-flex", "align-items-center", "justify-content-center");
-        Style cardHeaderStyle = new Style("height: 80px;");
-        Div cardHeader = new Div(cardBody, cardHeaderAttributes, cardHeaderStyle, HtmlGeneratorUtility.getTextAndBgStyleForData(request, 0));
+        Style cardHeaderStyle = new Style("height: 80px !important;" + HtmlGeneratorUtility.getTextAndBgStyleForData(request, 0).getAttributeValue());
+        Div cardHeader = new Div(cardBody, cardHeaderAttributes, cardHeaderStyle);
 
         ClassAttribute titleAttributes = new ClassAttribute("card-title", "font-weight-normal", "flex-grow-1", "center");
         H5 title = new H5(cardHeader, titleAttributes);
