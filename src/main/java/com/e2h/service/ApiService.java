@@ -37,7 +37,7 @@ public class ApiService {
             }
 
             ArrayList<Map<String, Object>> rows = request.getData();
-            rows.removeIf(row -> !DataManipulationUtility.matchCriterias(row, request));
+            rows.removeIf((row) -> !DataManipulationUtility.matchesAllRowsCriterias(request, row));
             Collections.sort(rows, DataRowComparator.get(request));
 
             Html document = generator.generate(request);

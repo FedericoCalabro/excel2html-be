@@ -6,73 +6,76 @@ import com.e2h.request.MergedColumns;
 import com.e2h.request.RowCriteria;
 import org.apache.commons.math3.stat.StatUtils;
 
-import java.lang.reflect.Array;
+import java.text.DecimalFormat;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class DataManipulationUtility {
 
-    public static boolean matchCriterias(Map<String, Object> row, GenerationRequest request) {
-        ArrayList<RowCriteria> criterias = request.getConfig().getRowCriteria();
-        for (int i = 0; i < criterias.size(); i++) {
-            boolean check = true;
-            RowCriteria criteria = criterias.get(i);
-            String columnName = criteria.getColumnName();
-            String type = criteria.getType();
-            String op = criteria.getOp();
-            Object valueRight = criteria.getValue();
-            Object valueLeft = DataManipulationUtility.extractColValue(request, row, columnName);
+    public static boolean matchesSingleCriteria(GenerationRequest request, RowCriteria criteria, Map<String, Object> rowData){
+        String columnName = criteria.getColumnName();
+        String type = criteria.getType();
+        String op = criteria.getOp();
+        Object valueRight = criteria.getValue();
+        Object valueLeft = DataManipulationUtility.extractColValue(request, rowData, columnName);
 
-            if (type.equals("Number")) {
-                try {
-                    float vLeft = Float.parseFloat(valueLeft.toString());
-                    float vRight = Float.parseFloat(valueRight.toString());
-                    switch (op) {
-                        case ">":
-                            check = vLeft > vRight;
-                            break;
-                        case "<":
-                            check = vLeft < vRight;
-                            break;
-                        case "!=":
-                            check = vLeft != vRight;
-                            break;
-                        case "==":
-                            check = vLeft == vRight;
-                            break;
-                        default:
-                            check = false;
-                    }
-                } catch (NumberFormatException e) {
-                    check = false;
-                }
-            } else if (type.equals("String")) {
-                String vLeft = valueLeft.toString();
-                String vRight = valueRight.toString();
+        boolean check = true;
+        if (type.equals("Number")) {
+            try {
+                float vLeft = Float.parseFloat(valueLeft.toString());
+                float vRight = Float.parseFloat(valueRight.toString());
                 switch (op) {
                     case ">":
-                        check = vLeft.compareToIgnoreCase(vRight) < 0;
+                        check = vLeft > vRight;
                         break;
                     case "<":
-                        check = vLeft.compareToIgnoreCase(vRight) > 0;
+                        check = vLeft < vRight;
                         break;
                     case "!=":
-                        check = !vLeft.equalsIgnoreCase(vRight);
+                        check = vLeft != vRight;
                         break;
                     case "==":
-                        check = vLeft.equalsIgnoreCase(vRight);
-                        break;
-                    case "Regex":
-                        check = vLeft.matches(vRight);
+                        check = vLeft == vRight;
                         break;
                     default:
                         check = false;
                 }
+            } catch (NumberFormatException e) {
+                check = false;
             }
-            if (!check) {
+        } else if (type.equals("String")) {
+            String vLeft = valueLeft.toString();
+            String vRight = valueRight.toString();
+            switch (op) {
+                case ">":
+                    check = vLeft.compareToIgnoreCase(vRight) < 0;
+                    break;
+                case "<":
+                    check = vLeft.compareToIgnoreCase(vRight) > 0;
+                    break;
+                case "!=":
+                    check = !vLeft.equalsIgnoreCase(vRight);
+                    break;
+                case "==":
+                    check = vLeft.equalsIgnoreCase(vRight);
+                    break;
+                case "Regex":
+                    check = vLeft.matches(vRight);
+                    break;
+                default:
+                    check = false;
+            }
+        }
+        return check;
+    }
+
+    public static boolean matchesAllRowsCriterias(GenerationRequest request, Map<String, Object> rowData){
+        List<RowCriteria> criterias = request.getConfig().getRowCriteria();
+        for (int i = 0; i < criterias.size(); i++) {
+            RowCriteria criteria = criterias.get(i);
+            if(!matchesSingleCriteria(request, criteria, rowData))
                 return false;
-            }
         }
         return true;
     }
@@ -194,6 +197,8 @@ public class DataManipulationUtility {
                     default:
                         throw new RuntimeException("Invalid op for aggregation func defined");
                 }
+                DecimalFormat df = new DecimalFormat("#.##");
+                res = Double.valueOf(df.format(res));
                 opToRes.put(currOp, res);
             }
             pivotFinal.put(key, opToRes);

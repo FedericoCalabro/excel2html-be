@@ -82,9 +82,7 @@ public class HtmlGeneratorUtility {
     }
 
     public static Body makeStarterBody(Html document){
-        ClassAttribute bodyAttributes = new ClassAttribute(
-                "w-100", "h-100", "d-flex",
-                "flex-column", "align-content-center", "justify-content-center");
+        ClassAttribute bodyAttributes = new ClassAttribute("w-100", "h-100", "d-flex", "flex-column");
         Body body = new Body(document, bodyAttributes);
         return body;
     }
@@ -142,21 +140,24 @@ public class HtmlGeneratorUtility {
 
     }
 
-    private static String getBGStyleFromColPos(GenerationRequest request, int pos) {
+    public static String getBGStyleFromColPos(GenerationRequest request, int pos) {
         ArrayList<String> themeColor = request.getConfig().getThemeColor();
-        if(themeColor.size() > pos){
-            return "background-color:"+themeColor.get(pos)+";";
-        }else{
-            return "background-color:#ffffff;";
+        String bg = "#ffffff";
+        if(themeColor.size() > pos) {
+            String temp = themeColor.get(pos);
+            if (temp != null) bg = temp;
         }
+        return "background-color:"+bg+";";
+
     }
-    private static String getTextStyleFromColPos(GenerationRequest request, int pos) {
+    public static String getTextStyleFromColPos(GenerationRequest request, int pos) {
         ArrayList<String> textColor = request.getConfig().getTextColor();
+        String c = "#000000";
         if(textColor.size() > pos){
-            return "color:"+textColor.get(pos)+";";
-        }else{
-            return "color:#000000;";
+            String temp = textColor.get(pos);
+            if(temp != null) c = temp;
         }
+        return "color:"+c+";";
     }
     public static Style getTextAndBgStyleForData(GenerationRequest request, int pos){
         return new Style(getTextStyleFromColPos(request, pos) + getBGStyleFromColPos(request, pos));

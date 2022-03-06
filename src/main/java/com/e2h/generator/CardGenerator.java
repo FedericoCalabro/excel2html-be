@@ -1,16 +1,21 @@
 package com.e2h.generator;
 
+import com.e2h.request.CardHeaderColorCriteria;
+import com.e2h.request.CardHeaderConfig;
 import com.e2h.request.GenerationRequest;
 import com.e2h.util.DataManipulationUtility;
 import com.webfirmframework.wffweb.tag.html.AbstractHtml;
 import com.webfirmframework.wffweb.tag.html.Body;
 import com.webfirmframework.wffweb.tag.html.H5;
 import com.webfirmframework.wffweb.tag.html.Html;
+import com.webfirmframework.wffweb.tag.html.attribute.ColorAttribute;
+import com.webfirmframework.wffweb.tag.html.attribute.Href;
 import com.webfirmframework.wffweb.tag.html.attribute.global.ClassAttribute;
 import com.webfirmframework.wffweb.tag.html.attribute.global.Id;
 import com.webfirmframework.wffweb.tag.html.attribute.global.Style;
 import com.webfirmframework.wffweb.tag.html.formatting.B;
 import com.webfirmframework.wffweb.tag.html.formatting.S;
+import com.webfirmframework.wffweb.tag.html.links.A;
 import com.webfirmframework.wffweb.tag.html.lists.Li;
 import com.webfirmframework.wffweb.tag.html.lists.Ol;
 import com.webfirmframework.wffweb.tag.html.metainfo.Head;
@@ -18,6 +23,7 @@ import com.webfirmframework.wffweb.tag.html.stylesandsemantics.Div;
 import com.webfirmframework.wffweb.tag.htmlwff.NoTag;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 public class CardGenerator implements GeneratorStrategy {
@@ -58,22 +64,51 @@ public class CardGenerator implements GeneratorStrategy {
         return array;
     }
 
+    private String getHeaderColor(GenerationRequest request, int row){
+        String leftColor = "background-color:";
+        String rightColor = "ffffff;";
+
+        Map<String, Object> rowData = request.getData().get(row);
+        List<CardHeaderColorCriteria> criterias = request.getConfig().getCardHeaderConfig().getColorsCriteria();
+
+        boolean found = false;
+        for (int i = 0; i <criterias.size() ; i++) {
+            CardHeaderColorCriteria criteria = criterias.get(i);
+            if(DataManipulationUtility.matchesSingleCriteria(request, criteria, rowData)){
+                rightColor = criteria.getColor() + ";";
+                found = true;
+                break;
+            }
+        }
+        return found ? leftColor + rightColor : HtmlGeneratorUtility.getBGStyleFromColPos(request, 0);
+    }
+
     private Div buildCard(AbstractHtml parent, GenerationRequest request, int row) {
 
         ArrayList<String> columns = request.getConfig().getColumns();
+        CardHeaderConfig headerConfig = request.getConfig().getCardHeaderConfig();
 
         String titleColumn = columns.get(0);
 
         Div cardBody = new Div(parent, new ClassAttribute("p-4")); //flexgrow per far crescere la card
 
         ClassAttribute cardHeaderAttributes = new ClassAttribute("card-header", "d-flex", "align-items-center", "justify-content-center");
-        Style cardHeaderStyle = new Style("height: 80px !important;" + HtmlGeneratorUtility.getTextAndBgStyleForData(request, 0).getAttributeValue());
+        Style cardHeaderStyle = new Style("height: 80px !important;" + getHeaderColor(request, row) + HtmlGeneratorUtility.getTextStyleFromColPos(request, 0));
         Div cardHeader = new Div(cardBody, cardHeaderAttributes, cardHeaderStyle);
 
         ClassAttribute titleAttributes = new ClassAttribute("card-title", "font-weight-normal", "flex-grow-1", "center");
         H5 title = new H5(cardHeader, titleAttributes);
         B bold = new B(title);
-        AbstractHtml insideBold = HtmlGeneratorUtility.makeDataTag(bold, request, row, titleColumn);
+        AbstractHtml insideBold;
+
+        if(request.getConfig().getCardHeaderConfig().isLink()){
+            insideBold = new A(bold);
+            String href = DataManipulationUtility.extractColValue(request, request.getData().get(row), headerConfig.getLinkValueColumn());
+            insideBold.addAttributes(new Href(href));
+            insideBold.addInnerHtml(new NoTag(null, DataManipulationUtility.extractColValue(request, request.getData().get(row), headerConfig.getLinkDisplayColumn())));
+        }else{
+            insideBold = HtmlGeneratorUtility.makeDataTag(bold, request, row, titleColumn);
+        }
 
         bold.addInnerHtml(insideBold);
         title.appendChild(bold);

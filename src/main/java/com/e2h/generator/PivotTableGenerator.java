@@ -8,7 +8,6 @@ import com.webfirmframework.wffweb.tag.html.Body;
 import com.webfirmframework.wffweb.tag.html.Html;
 import com.webfirmframework.wffweb.tag.html.attribute.Scope;
 import com.webfirmframework.wffweb.tag.html.attribute.global.ClassAttribute;
-import com.webfirmframework.wffweb.tag.html.attribute.global.Style;
 import com.webfirmframework.wffweb.tag.html.metainfo.Head;
 import com.webfirmframework.wffweb.tag.html.stylesandsemantics.Div;
 import com.webfirmframework.wffweb.tag.html.tables.*;
