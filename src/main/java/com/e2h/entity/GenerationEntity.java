@@ -21,4 +21,7 @@ public class GenerationEntity {
 
     @Column(columnDefinition="TEXT")
     private String html;
+
+    @Column(columnDefinition="TEXT")
+    private String config;
 }

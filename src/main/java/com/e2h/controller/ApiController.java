@@ -25,9 +25,14 @@ public class ApiController {
         return ResponseEntity.ok(apiService.get(id));
     }
 
-    @PostMapping("/download")
-    public ResponseEntity<Resource> download(@NotNull @RequestParam String id){
-        return ResponseEntity.ok().header("filename", "Data.html").body(apiService.download(id));
+    @PostMapping("/download/html")
+    public ResponseEntity<Resource> downloadHtml(@NotNull @RequestParam String id){
+        return ResponseEntity.ok().header("filename", "Data.html").body(apiService.downloadHtml(id));
+    }
+
+    @PostMapping("/download/config")
+    public ResponseEntity<Resource> downloadConfig(@NotNull @RequestParam String id){
+        return ResponseEntity.ok().header("filename", "Config.json").body(apiService.downloadConfig(id));
     }
 
 }

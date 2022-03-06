@@ -7,6 +7,7 @@ import com.e2h.request.GenerationRequest;
 import com.e2h.request.SortingColumn;
 import com.e2h.util.DataManipulationUtility;
 import com.e2h.util.DataRowComparator;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.webfirmframework.wffweb.tag.html.Html;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 
@@ -46,6 +48,15 @@ public class ApiService {
             String plainHTML = document.toHtmlString();
             GenerationEntity entity = new GenerationEntity();
             entity.setHtml(plainHTML);
+
+            try {
+                ObjectMapper Obj = new ObjectMapper();
+                String jsonStr = Obj.writeValueAsString(request.getConfig());
+                entity.setConfig(jsonStr);
+            }
+            catch (IOException e) {
+                e.printStackTrace();
+            }
             return repository.save(entity);
     }
 
@@ -53,9 +64,13 @@ public class ApiService {
         return repository.getById(id);
     }
 
-    public Resource download(String id) {
+    public Resource downloadHtml(String id) {
         GenerationEntity entity = repository.getById(id);
         return new ByteArrayResource(entity.getHtml().getBytes(StandardCharsets.UTF_8));
+    }
+    public Resource downloadConfig(String id) {
+        GenerationEntity entity = repository.getById(id);
+        return new ByteArrayResource(entity.getConfig().getBytes(StandardCharsets.UTF_8));
     }
 
 }
