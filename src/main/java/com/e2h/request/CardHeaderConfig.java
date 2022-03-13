@@ -6,7 +6,7 @@ import java.util.ArrayList;
 
 @Data
 public class CardHeaderConfig {
-    private boolean isLink;
+    private boolean link;
     private String linkDisplayColumn;
     private String linkValueColumn;
     private ArrayList<CardHeaderColorCriteria> colorsCriteria = new ArrayList();

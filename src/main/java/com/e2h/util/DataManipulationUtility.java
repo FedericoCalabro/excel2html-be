@@ -1,9 +1,6 @@
 package com.e2h.util;
 
-import com.e2h.request.AggregationRow;
-import com.e2h.request.GenerationRequest;
-import com.e2h.request.MergedColumns;
-import com.e2h.request.RowCriteria;
+import com.e2h.request.*;
 import org.apache.commons.math3.stat.StatUtils;
 
 import java.text.DecimalFormat;
@@ -143,17 +140,21 @@ public class DataManipulationUtility {
         }
     }
 
-    public static HashMap<String, HashMap<String, Double>> getGroupedAggrFuncMap(GenerationRequest request, AggregationRow aggrRow) {
-        HashMap<String, HashMap<String, Double>> pivotFinal = new HashMap<>();
-        HashMap<String, ArrayList<Double>> pivotHelper = new HashMap<>();
+    public static double[] collectionDoubleToDoubleArr(List<Double> collection) {
+        double[] ret = new double[collection.size()];
+        Iterator<Double> iterator = collection.iterator();
+        for (int i = 0; i < ret.length; i++) {
+            ret[i] = iterator.next().doubleValue();
+        }
+        return ret;
+    }
 
-        String blockedCol = aggrRow.getBlockedCol();
-        String target = aggrRow.getTargetCol();
-        ArrayList<String> op = aggrRow.getOp();
+    public static HashMap<String, ArrayList<Double>> getMapFromBlockedTarget(GenerationRequest request, String blocked, String target){
+        HashMap<String, ArrayList<Double>> pivotHelper = new HashMap<>();
 
         for (int row = 0; row < request.getData().size(); row++) {
             Map<String, Object> rowData = request.getData().get(row);
-            String blockedColValue = rowData.get(blockedCol).toString();
+            String blockedColValue = rowData.get(blocked).toString();
             Object targetObj = rowData.get(target);
             double targetValue;
             try {
@@ -165,53 +166,6 @@ public class DataManipulationUtility {
             pivotHelper.get(blockedColValue).add(targetValue);
         }
 
-        for (Map.Entry<String, ArrayList<Double>> entry : pivotHelper.entrySet()) {
-            String key = entry.getKey();
-            double[] arrValue = DataManipulationUtility.collectionDoubleToDoubleArr(entry.getValue());
-            HashMap<String, Double> opToRes = new HashMap<>();
-            for (int i = 0; i < op.size(); i++) {
-                String currOp = op.get(i);
-                double res;
-                switch (currOp) {
-                    case "Sum":
-                        res = StatUtils.sum(arrValue);
-                        break;
-                    case "Min":
-                        res = StatUtils.min(arrValue);
-                        break;
-                    case "Max":
-                        res = StatUtils.max(arrValue);
-                        break;
-                    case "Mean":
-                        res = StatUtils.mean(arrValue);
-                        break;
-                    case "Product":
-                        res = StatUtils.product(arrValue);
-                        break;
-                    case "Std Variance":
-                        res = StatUtils.variance(arrValue);
-                        break;
-                    case "Std Deviation":
-                        res = Math.sqrt(StatUtils.variance(arrValue));
-                        break;
-                    default:
-                        throw new RuntimeException("Invalid op for aggregation func defined");
-                }
-                DecimalFormat df = new DecimalFormat("#.##");
-                res = Double.valueOf(df.format(res));
-                opToRes.put(currOp, res);
-            }
-            pivotFinal.put(key, opToRes);
-        }
-        return pivotFinal;
-    }
-
-    public static double[] collectionDoubleToDoubleArr(List<Double> collection) {
-        double[] ret = new double[collection.size()];
-        Iterator<Double> iterator = collection.iterator();
-        for (int i = 0; i < ret.length; i++) {
-            ret[i] = iterator.next().doubleValue();
-        }
-        return ret;
+        return pivotHelper;
     }
 }

@@ -35,6 +35,7 @@ public class ApiService {
                 case "TABLE": generator = new TableGenerator(); break;
                 case "CARD":  generator = new CardGenerator(); break;
                 case "PIVOT":  generator = new PivotTableGenerator(); break;
+                case "PLOT":  generator = new PlotGenerator(); break;
                 default: throw new RuntimeException("Bad view-mode configured!");
             }
 
@@ -57,6 +58,7 @@ public class ApiService {
             catch (IOException e) {
                 e.printStackTrace();
             }
+
             return repository.save(entity);
     }
 

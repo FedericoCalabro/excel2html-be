@@ -10,6 +10,7 @@ import com.webfirmframework.wffweb.tag.html.attribute.*;
 import com.webfirmframework.wffweb.tag.html.attribute.global.ClassAttribute;
 import com.webfirmframework.wffweb.tag.html.attribute.global.Style;
 import com.webfirmframework.wffweb.tag.html.attribute.global.Style;
+import com.webfirmframework.wffweb.tag.html.formatting.S;
 import com.webfirmframework.wffweb.tag.html.html5.attribute.Content;
 import com.webfirmframework.wffweb.tag.html.links.A;
 import com.webfirmframework.wffweb.tag.html.links.Link;
@@ -32,6 +33,23 @@ public class HtmlGeneratorUtility {
     private final static String META_CHARSET = "utf-8";
     private final static String META_RESPONSIVE_NAME = "viewport";
     private final static String META_RESPONSIVE_CONTENT = "width=device-width, initial-scale=1";
+
+    private final static String CHART_JS_SRC = "https://cdn.jsdelivr.net/npm/chart.js";
+    private final static String HAMMER_JS_SRC = "https://cdn.jsdelivr.net/npm/hammerjs@2.0.8";
+    private final static String CHARTZOOM_JS_SRC = "https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-zoom/1.2.0/chartjs-plugin-zoom.min.js";
+
+    public static void includeChartJS(Head head){
+        Src src = new Src(CHART_JS_SRC);
+        Script script = new Script(head, src);
+
+        Src src2 = new Src(HAMMER_JS_SRC);
+        Script script2 = new Script(head, src2);
+
+        Src src3 = new Src(CHARTZOOM_JS_SRC);
+        Script script3 = new Script(head, src3);
+
+        head.appendChildren(script, script2, script3);
+    }
 
     private static void includeMetaCharset(Head head) {
         Charset charset = new Charset(META_CHARSET);
@@ -77,7 +95,7 @@ public class HtmlGeneratorUtility {
 
     public static void finalizeDocument(Html document) {
         document.setPrependDocType(true);
-        Body body = (Body) document.getChildAt(1);
+        Body body = (Body) document.getChildAt(2);
         includeBootstrapJS(body);
     }
 

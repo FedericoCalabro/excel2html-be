@@ -20,7 +20,9 @@ import com.webfirmframework.wffweb.tag.html.lists.Li;
 import com.webfirmframework.wffweb.tag.html.lists.Ol;
 import com.webfirmframework.wffweb.tag.html.metainfo.Head;
 import com.webfirmframework.wffweb.tag.html.stylesandsemantics.Div;
+import com.webfirmframework.wffweb.tag.html.stylesandsemantics.StyleTag;
 import com.webfirmframework.wffweb.tag.htmlwff.NoTag;
+import org.aspectj.weaver.ast.Not;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,7 +34,12 @@ public class CardGenerator implements GeneratorStrategy {
     public Html generate(GenerationRequest request) {
 
         Html document = HtmlGeneratorUtility.makeStarterRoot();
+
+        StyleTag styleTag = new StyleTag(document);
+        styleTag.addInnerHtml(new NoTag(styleTag, ".card:hover{background-color:#f2f2f2;}"));
+
         Head head = HtmlGeneratorUtility.makeStarterHead(document, request);
+
         Body body = HtmlGeneratorUtility.makeStarterBody(document);
         document.appendChildren(head, body);
 
@@ -90,7 +97,7 @@ public class CardGenerator implements GeneratorStrategy {
 
         String titleColumn = columns.get(0);
 
-        Div cardBody = new Div(parent, new ClassAttribute("p-4")); //flexgrow per far crescere la card
+        Div cardBody = new Div(parent, new ClassAttribute("p-4 card" )); //flexgrow per far crescere la card
 
         ClassAttribute cardHeaderAttributes = new ClassAttribute("card-header", "d-flex", "align-items-center", "justify-content-center");
         Style cardHeaderStyle = new Style("height: 80px !important;" + getHeaderColor(request, row) + HtmlGeneratorUtility.getTextStyleFromColPos(request, 0));

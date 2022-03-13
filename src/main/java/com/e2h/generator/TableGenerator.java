@@ -10,6 +10,7 @@ import com.webfirmframework.wffweb.tag.html.attribute.global.Id;
 import com.webfirmframework.wffweb.tag.html.attribute.global.Style;
 import com.webfirmframework.wffweb.tag.html.metainfo.Head;
 import com.webfirmframework.wffweb.tag.html.stylesandsemantics.Div;
+import com.webfirmframework.wffweb.tag.html.stylesandsemantics.StyleTag;
 import com.webfirmframework.wffweb.tag.html.tables.*;
 import com.webfirmframework.wffweb.tag.htmlwff.NoTag;
 
@@ -22,9 +23,12 @@ public class TableGenerator implements GeneratorStrategy {
     public Html generate(GenerationRequest request) {
 
         Html document = HtmlGeneratorUtility.makeStarterRoot();
+
+        StyleTag styleTag = new StyleTag(document);
+
         Head head = HtmlGeneratorUtility.makeStarterHead(document, request);
         Body body = HtmlGeneratorUtility.makeStarterBody(document);
-        document.appendChildren(head, body);
+        document.appendChildren(styleTag, head, body);
 
         Div tableWrapper = buildTableWrapper(body);
         body.appendChild(tableWrapper);

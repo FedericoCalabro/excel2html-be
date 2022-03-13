@@ -10,7 +10,7 @@ public class Config {
     private String name = "DATA-VIEW";
 
     private boolean addRowCounter = false;
-
+    private PlotConfig plotConfig = new PlotConfig();
     private ArrayList<String> columns = new ArrayList<>();
     private ArrayList<String> themeColor = new ArrayList<>();
     private ArrayList<String> textColor = new ArrayList<>();
