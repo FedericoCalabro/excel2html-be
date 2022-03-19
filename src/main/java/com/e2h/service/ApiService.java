@@ -4,6 +4,7 @@ import com.e2h.entity.GenerationEntity;
 import com.e2h.generator.*;
 import com.e2h.repository.GenerationRepository;
 import com.e2h.request.GenerationRequest;
+import com.e2h.request.SendToServer;
 import com.e2h.request.SortingColumn;
 import com.e2h.util.DataManipulationUtility;
 import com.e2h.util.DataRowComparator;
@@ -14,9 +15,7 @@ import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 
@@ -75,4 +74,33 @@ public class ApiService {
         return new ByteArrayResource(entity.getConfig().getBytes(StandardCharsets.UTF_8));
     }
 
+    public boolean sendToServer(String id, SendToServer config){
+        GenerationEntity entity = this.get(id);
+
+        String cwd = System.getProperty("user.dir");
+        String filename = "temp" + new Date().getTime() + ".html";
+        String localAbsPathToFile = cwd + "\\" + filename;
+
+        File file = new File(localAbsPathToFile);
+
+        try{
+            file.createNewFile();
+
+            FileOutputStream fos = new FileOutputStream(localAbsPathToFile, false);
+            fos.write(entity.getHtml().getBytes());
+            fos.close();
+
+            String command = String.format("scp -P %d %s %s@%s:%s", config.getPort(), localAbsPathToFile, config.getUsername(), config.getUrl(), config.getAbsPath());
+            Runtime.getRuntime().exec(command);
+
+        }catch (IOException e){
+            throw new RuntimeException("Errore durante l'invio del file");
+        }finally {
+            file.delete();
+        }
+
+
+
+        return true;
+    }
 }

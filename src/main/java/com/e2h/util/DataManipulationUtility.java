@@ -159,12 +159,14 @@ public class DataManipulationUtility {
             double targetValue;
             try {
                 targetValue = Double.parseDouble(targetObj.toString());
+                pivotHelper.putIfAbsent(blockedColValue, new ArrayList<>());
+                pivotHelper.get(blockedColValue).add(targetValue);
             } catch (NumberFormatException e) {
-                throw new RuntimeException("Unexpected value: " + targetObj + " for column: " + target);
+//                throw new RuntimeException("Unexpected value: " + targetObj + " for column: " + target);
             }
-            pivotHelper.putIfAbsent(blockedColValue, new ArrayList<>());
-            pivotHelper.get(blockedColValue).add(targetValue);
         }
+
+//        Runtime.getRuntime().exec()
 
         return pivotHelper;
     }

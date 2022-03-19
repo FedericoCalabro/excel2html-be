@@ -2,12 +2,15 @@ package com.e2h.controller;
 
 import com.e2h.entity.GenerationEntity;
 import com.e2h.request.GenerationRequest;
+import com.e2h.request.SendToServer;
 import com.e2h.service.ApiService;
 import com.sun.istack.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.io.IOException;
 
 @RestController
 public class ApiController {
@@ -33,6 +36,11 @@ public class ApiController {
     @PostMapping("/download/config")
     public ResponseEntity<Resource> downloadConfig(@NotNull @RequestParam String id){
         return ResponseEntity.ok().header("filename", "Config.json").body(apiService.downloadConfig(id));
+    }
+
+    @PostMapping("/sendToServer")
+    public ResponseEntity<Boolean> sendToServer(@NotNull @RequestParam String id, @RequestBody SendToServer config) throws IOException {
+        return ResponseEntity.ok(apiService.sendToServer(id, config));
     }
 
 }

@@ -16,8 +16,10 @@ import com.webfirmframework.wffweb.tag.htmlwff.NoTag;
 import org.apache.commons.math3.stat.StatUtils;
 
 import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 public class PivotTableGenerator implements GeneratorStrategy{
@@ -177,8 +179,9 @@ public class PivotTableGenerator implements GeneratorStrategy{
                     default:
                         throw new RuntimeException("Invalid op for aggregation func defined");
                 }
-                DecimalFormat df = new DecimalFormat("#.##");
-                res = Double.valueOf(df.format(res));
+                DecimalFormat df = (DecimalFormat) NumberFormat.getNumberInstance(Locale.US);
+                df.applyPattern("#.##");
+                res = Double.parseDouble(df.format(res));
                 opToRes.put(currOp, res);
             }
             pivotFinal.put(key, opToRes);

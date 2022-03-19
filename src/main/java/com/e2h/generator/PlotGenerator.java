@@ -15,8 +15,10 @@ import com.webfirmframework.wffweb.tag.htmlwff.NoTag;
 
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 
 public class PlotGenerator implements GeneratorStrategy {
@@ -60,11 +62,11 @@ public class PlotGenerator implements GeneratorStrategy {
         PlotConfig plotConfig = request.getConfig().getPlotConfig();
         Map<String, ArrayList<Double>> groupedRows = DataManipulationUtility.getMapFromBlockedTarget(request, plotConfig.getBlockedCol(), plotConfig.getTargetCol());
 
-        config.append("\nconst labels = [" + buildLabels(plotConfig, groupedRows) + "];");
-        config.append("\nconst data = {");
-        config.append("\nlabels : labels,");
-        config.append("\ndatasets: [" + buildDataSetObjs(plotConfig, groupedRows) + "]\n};");
-        config.append("\nconst config = {\n" + buildConfig(request, plotConfig) + "\n};");
+        config.append("const labels = [" + buildLabels(plotConfig, groupedRows) + "];\n");
+        config.append("const data = {\n");
+        config.append("labels : labels,\n");
+        config.append("datasets: [" + buildDataSetObjs(plotConfig, groupedRows) + "]};\n");
+        config.append("const config = {" + buildConfig(request, plotConfig) + "};\n");
 
 
         NoTag scriptSelf = new NoTag(script, config.toString());
@@ -104,49 +106,62 @@ public class PlotGenerator implements GeneratorStrategy {
         String type = plotConfig.getType();
         if (type.equals("CACTUS")) {
             for (Map.Entry<String, ArrayList<Double>> entry : map.entrySet()) {
-                returnValue.append("{\n");
+                returnValue.append("\n{");
                 returnValue.append("data: [");
                 entry.getValue().stream().sorted().forEach(d -> returnValue.append(d + ","));
-                returnValue.append("],\n");
+                returnValue.append("],");
                 returnValue.append(getDSColors(plotConfig, index));
                 returnValue.append(getPointStyle(plotConfig, index));
-                returnValue.append("\nlabel: '" + entry.getKey() + "',");
-                returnValue.append("\n},");
+                returnValue.append("label: '" + entry.getKey() + "',");
+                returnValue.append("},\n");
                 index++;
             }
         } else if (type.equals("SCATTER")) {
             String labelY = plotConfig.getLabelY();
+            String labelX = plotConfig.getLabelX();
             ArrayList<Double> valueY = map.get(labelY);
             if (valueY == null) throw new RuntimeException("Label Y: " + labelY + " not found");
-            returnValue.append("{\n");
+            returnValue.append("\n{");
             returnValue.append("data: [");
-            valueY.stream().sorted().forEach(d -> returnValue.append(d + ","));
+            valueY.stream().forEach(d -> returnValue.append(d + ","));
             returnValue.append("],");
             returnValue.append(getDSColors(plotConfig, index));
             returnValue.append(getPointStyle(plotConfig, index));
             returnValue.append("label: '" + plotConfig.getLabelX() + " - " + labelY + "',");
-            returnValue.append("}\n");
+            returnValue.append("},\n");
+            Double maxX = Collections.max(map.get(labelX));
+            Double maxY = Collections.max(valueY);
+            returnValue.append(
+                    "\n{" +
+                            "data:[" +
+                            "{x: 0, y: 0}, {x: " + maxX + ", y: " + maxY + "}" +
+                            "]," +
+                            "type: 'line'," +
+                            "radius: 0," +
+                            "backgroundColor: 'rgba(255, 0, 0, 0.6)'," +
+                            "label: 'label to remove'" +
+                            "}\n");
         }
 
         return returnValue.toString();
     }
 
-    private String getDSColors(PlotConfig plotConfig, int index){
+    private String getDSColors(PlotConfig plotConfig, int index) {
         StringBuilder returnValue = new StringBuilder();
         ArrayList<String> colors = plotConfig.getColors();
         Random random = new Random();
-        Color color = index >= colors.size() ? new Color(random.nextInt(256),random.nextInt(256),random.nextInt(256)) : Color.decode(colors.get(index));
+        Color color = index >= colors.size() ? new Color(random.nextInt(256), random.nextInt(256), random.nextInt(256)) : Color.decode(colors.get(index));
         String colorString = color.getRed() + ", " + color.getGreen() + ", " + color.getBlue();
         String borderColor = "borderColor: 'rgba(" + colorString + ", 1.0)'";
         String backgroundColor = "backgroundColor: 'rgba(" + colorString + ", 0.6)'";
-        returnValue.append(borderColor + ",\n" + backgroundColor + ",\n");
+        returnValue.append(borderColor + "," + backgroundColor + ",");
         return returnValue.toString();
     }
 
-    private String getPointStyle(PlotConfig plotConfig, int index){
+    private String getPointStyle(PlotConfig plotConfig, int index) {
         ArrayList<String> styles = plotConfig.getStyles();
         String style = index >= styles.size() ? "circle" : styles.get(index);
-        return "pointStyle: '" + style + "',";
+        return "pointStyle: '" + style + "',radius: 4.5,";
     }
 
     private String buildConfig(GenerationRequest request, PlotConfig plotConfig) {
@@ -154,13 +169,13 @@ public class PlotGenerator implements GeneratorStrategy {
         StringBuilder returnValue = new StringBuilder();
 
         if (type.equals("CACTUS")) {
-            returnValue.append("\ntype: 'line',");
+            returnValue.append("type: 'line',");
         } else if (type.equals("SCATTER")) {
-            returnValue.append("\ntype: 'scatter',");
+            returnValue.append("type: 'scatter',");
         }
 
-        returnValue.append("\ndata: data,");
-        returnValue.append("\noptions: {" + buildOptions(request, plotConfig) + "},");
+        returnValue.append("data: data,");
+        returnValue.append("options: {" + buildOptions(request, plotConfig) + "},");
 
         return returnValue.toString();
     }
@@ -170,57 +185,67 @@ public class PlotGenerator implements GeneratorStrategy {
         StringBuilder returnValue = new StringBuilder();
 
         returnValue.append(
-                "plugins: {\n" +
-                    "zoom: "+ buildZoomConfig() +",\n" +
-                    "title: {\n" +
-                        "align: 'center',\n" +
-                        "display: true,\n" +
-                        "text: " + "'" + type.toUpperCase() + " PLOT',\n" +
-                        "padding: {\n top: 10,\nbottom: 20}" +
-                    "\n}" +
-                "},\n");
+                "plugins: {" +
+                        "legend: {" +
+                        "labels: {" +
+                        "filter: function(item, chart) {" +
+                        "return !item.text.includes('label to remove');}," +
+                        "font:{size: 14}" +
+                        "}" +
+                        "}," +
+                        "zoom: " + buildZoomConfig() + "," +
+                        "title: {" +
+                        "font:{size:20}," +
+                        "align: 'center'," +
+                        "display: true," +
+                        "text: " + "'" + type.toUpperCase() + " PLOT'," +
+                        "padding: { top: 10,bottom: 20}" +
+                        "}" +
+                        "},");
 
-        returnValue.append("scales: {\n");
+        returnValue.append("scales: {");
 
         returnValue.append(
-                            "x: {\n" +
-                                "title: {\n" +
-                                    "display: true,\n" +
-                                    "text: '"+ plotConfig.getLabelXValue()+"'\n" +
-                                "}\n" +
-                            "},\n");
+                "x: {" +
+                        "title: {" +
+                        "display: true," +
+                        "text: '" + plotConfig.getLabelXValue() + "'," +
+                        "font:{size:15}" +
+                        "}" +
+                        "},");
 
         returnValue.append(
-                            "y: {\n" +
-                                "title: {\n" +
-                                    "display: true,\n" +
-                                    "text: '"+ plotConfig.getLabelYValue()+"'\n" +
-                                "}\n" +
-                            "},\n");
+                "y: {" +
+                        "title: {" +
+                        "display: true," +
+                        "text: '" + plotConfig.getLabelYValue() + "'," +
+                        "font:{size:15}" +
+                        "}" +
+                        "},");
 
-        returnValue.append("},\n");
+        returnValue.append("},");
 
         return returnValue.toString();
     }
 
-    private String buildZoomConfig(){
-        return "{\n" +
-                "  pan: {\n" +
-                "    enabled: true,\n" +
-                "    mode: 'xy',\n" +
-                "  },\n" +
-                "  zoom: {\n" +
-                "    wheel: {\n" +
-                "      enabled: true,\n" +
-                "    },\n" +
-                "    pinch: {\n" +
-                "      enabled: true\n" +
-                "    },\n" +
-                "    mode: 'xy',\n" +
-                "    onZoomComplete({chart}) {\n" +
-                "      chart.update('none');\n" +
-                "    }\n" +
-                "  }\n" +
-                "}\n";
+    private String buildZoomConfig() {
+        return "{" +
+                "  pan: {" +
+                "    enabled: true," +
+                "    mode: 'xy'," +
+                "  }," +
+                "  zoom: {" +
+                "    wheel: {" +
+                "      enabled: true," +
+                "    }," +
+                "    pinch: {" +
+                "      enabled: true" +
+                "    }," +
+                "    mode: 'xy'," +
+                "    onZoomComplete({chart}) {" +
+                "      chart.update('none');" +
+                "    }" +
+                "  }" +
+                "}";
     }
 }

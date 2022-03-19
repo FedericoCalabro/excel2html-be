@@ -103,7 +103,7 @@ public class CardGenerator implements GeneratorStrategy {
         Style cardHeaderStyle = new Style("height: 80px !important;" + getHeaderColor(request, row) + HtmlGeneratorUtility.getTextStyleFromColPos(request, 0));
         Div cardHeader = new Div(cardBody, cardHeaderAttributes, cardHeaderStyle);
 
-        ClassAttribute titleAttributes = new ClassAttribute("card-title", "font-weight-normal", "flex-grow-1", "center");
+        ClassAttribute titleAttributes = new ClassAttribute( "font-weight-normal", "center");
         H5 title = new H5(cardHeader, titleAttributes);
         B bold = new B(title);
         AbstractHtml insideBold;
