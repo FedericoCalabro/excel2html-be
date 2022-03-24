@@ -62,10 +62,9 @@ public class PlotGenerator implements GeneratorStrategy {
         PlotConfig plotConfig = request.getConfig().getPlotConfig();
         Map<String, ArrayList<Double>> groupedRows = DataManipulationUtility.getMapFromBlockedTarget(request, plotConfig.getBlockedCol(), plotConfig.getTargetCol());
 
-        config.append("const labels = [" + buildLabels(plotConfig, groupedRows) + "];\n");
         config.append("const data = {\n");
-        config.append("labels : labels,\n");
-        config.append("datasets: [" + buildDataSetObjs(plotConfig, groupedRows) + "]};\n");
+        config.append("datasets: [" + buildDataSetObjsAndLabels(plotConfig, groupedRows) + "],\n");
+        config.append("labels : [" + buildLabels(plotConfig, groupedRows) + "]};\n");
         config.append("const config = {" + buildConfig(request, plotConfig) + "};\n");
 
 
@@ -99,7 +98,7 @@ public class PlotGenerator implements GeneratorStrategy {
         return returnValue.toString();
     }
 
-    private String buildDataSetObjs(PlotConfig plotConfig, Map<String, ArrayList<Double>> map) {
+    private String buildDataSetObjsAndLabels(PlotConfig plotConfig, Map<String, ArrayList<Double>> map) {
         StringBuilder returnValue = new StringBuilder();
 
         int index = 0;

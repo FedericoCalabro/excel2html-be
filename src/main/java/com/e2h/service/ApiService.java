@@ -91,15 +91,22 @@ public class ApiService {
             fos.close();
 
             String command = String.format("scp -P %d %s %s@%s:%s", config.getPort(), localAbsPathToFile, config.getUsername(), config.getUrl(), config.getAbsPath());
-            Runtime.getRuntime().exec(command);
+            Process process = Runtime.getRuntime().exec(command);
+            PrintWriter pw = new PrintWriter(process.getOutputStream(), true);
+            pw.println(config.getPassword());
+            pw.close();
+            InputStream ip = process.getErrorStream();
+            String s = new String(ip.readAllBytes());
+            if(s.length() > 0)
+                throw new RuntimeException("Errore: " + s);
 
         }catch (IOException e){
             throw new RuntimeException("Errore durante l'invio del file");
+        }catch (Exception e){
+            throw new RuntimeException(e.getMessage());
         }finally {
             file.delete();
         }
-
-
 
         return true;
     }
