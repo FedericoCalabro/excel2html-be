@@ -183,6 +183,8 @@ public class PlotGenerator implements GeneratorStrategy {
         String type = plotConfig.getType();
         StringBuilder returnValue = new StringBuilder();
 
+        String zoom = plotConfig.isZoomable() ? "zoom: " + buildZoomConfig() + "," : "";
+
         returnValue.append(
                 "plugins: {" +
                         "legend: {" +
@@ -192,7 +194,7 @@ public class PlotGenerator implements GeneratorStrategy {
                         "font:{size: 14}" +
                         "}" +
                         "}," +
-                        "zoom: " + buildZoomConfig() + "," +
+                        zoom +
                         "title: {" +
                         "font:{size:20}," +
                         "align: 'center'," +

@@ -15,4 +15,5 @@ public class PlotConfig {
     private String labelYValue;
     private ArrayList<String> colors = new ArrayList<>();
     private ArrayList<String> styles = new ArrayList<>();
+    private boolean zoomable;
 }
