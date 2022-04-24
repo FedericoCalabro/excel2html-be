@@ -1,0 +1,108 @@
+{
+    "view": "CARD",
+    "name": "DATA-VIEW",
+    "addRowCounter": false,
+    "columns": [
+        "Insegnamento",
+        "Anno/Year: {{1}} - Sem: {{2}}",
+        "CFU: {{1}} - Lingua/Lang: {{2}}",
+        "MS Teams: {{1}} - {{2}}",
+        "Info: {{1}} - {{2}}",
+        "Curriculum"
+    ],
+    "themeColor": [
+        "#ffffff",
+        "#ffffff",
+        "#ffffff",
+        "#ffffff",
+        "#ffffff",
+        "#ffffff"
+    ],
+    "textColor": [
+        "#000000",
+        "#000000",
+        "#000000",
+        "#000000",
+        "#000000",
+        "#000000"
+    ],
+    "sortByColumns": [
+        {
+            "name": "Anno",
+            "type": "Number",
+            "order": 1
+        },
+        {
+            "name": "Insegnamento",
+            "type": "String",
+            "order": 1
+        }
+    ],
+    "mergedColumns": [
+        {
+            "nameDefinition": "Anno/Year: {{1}} - Sem: {{2}}",
+            "mergedFrom": [
+                "Anno",
+                "Semestre"
+            ]
+        },
+        {
+            "nameDefinition": "CFU: {{1}} - Lingua/Lang: {{2}}",
+            "mergedFrom": [
+                "CFU",
+                "Lingua"
+            ]
+        },
+        {
+            "nameDefinition": "MS Teams: {{1}} - {{2}}",
+            "mergedFrom": [
+                "Codice Microsoft Teams",
+                "Link Microsoft Teams"
+            ]
+        },
+        {
+            "nameDefinition": "Info: {{1}} - {{2}}",
+            "mergedFrom": [
+                "Info",
+                "Materiale"
+            ]
+        }
+    ],
+    "aggregationRows": [],
+    "rowCriteria": [
+        {
+            "columnName": "Anno",
+            "type": "String",
+            "op": "!=",
+            "value": "*"
+        }
+    ],
+    "cardHeaderConfig": {
+        "linkDisplayColumn": "Insegnamento",
+        "linkValueColumn": "Materiale",
+        "colorsCriteria": [
+            {
+                "columnName": "Anno",
+                "type": "String",
+                "op": "==",
+                "value": "1",
+                "color": "#abdb9a"
+            },
+            {
+                "columnName": "Anno",
+                "type": "String",
+                "op": "==",
+                "value": "2",
+                "color": "#dfa839"
+            },
+            {
+                "columnName": "Anno",
+                "type": "String",
+                "op": "==",
+                "value": "3",
+                "color": "#c5a2d7"
+            }
+        ],
+        "link": true
+    }
+}
